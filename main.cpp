@@ -55,6 +55,22 @@ private:
         return true;
     }
 
+    bool checkHorizontalByLeft(int row, string token, int column) {
+        for (int i = column; i < 4; ++i) {
+            if (grid[row][column - i] != token)
+                return false;
+        }
+        return true;
+    }
+
+    bool checkHorizontalByRight(int row, string token, int column) {
+        for (int i = column; i < 4; ++i) {
+            if (grid[row][column + i] != token)
+                return false;
+        }
+        return true;
+    }
+
 public:
     Grid() {
         vector<string> row(L);
@@ -93,8 +109,17 @@ public:
     bool checkToken(int column) {
         int lastRow = this->getRowId(column);
         string lastToken = grid[lastRow + 1][column];
+
         if (lastRow < h - 4 && lastToken == grid[lastRow + 2][column]) {
             return checkVertical(lastRow, lastToken, column);
+        }
+
+        if (column >= 3 && grid[lastRow + 1][column - 1] == lastToken) {
+            return checkHorizontalByLeft(lastRow + 1, lastToken, column);
+        }
+
+        if (column <= L - 4 && grid[lastRow + 1][column + 1] == lastToken) {
+            return checkHorizontalByRight(lastRow + 1, lastToken, column);
         }
         return false;
     }
