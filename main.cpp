@@ -51,18 +51,18 @@ class Grid {
 private:
     int L = 7;
     int h = 6;
-    vector<vector <string>> grid;
+    vector<vector <Token *>> grid;
 
     int getRowId(int column) {
         int i = 0;
         for (i = 0; i < h; ++i) {
-            if (grid[i][column] != "_  ")
+            if (grid[i][column] != nullptr)
                 return i - 1;
         }
         return i - 1;
     }
 
-    bool checkVertical(int row, string token, int column) {
+    bool checkVertical(int row, Token *token, int column) {
         for (int i = 1; i <= 4; ++i) {
             if (grid[row + i][column] != token)
                 return false;
@@ -70,7 +70,7 @@ private:
         return true;
     }
 
-    bool checkHorizontalByLeft(int row, string token, int column) {
+    bool checkHorizontalByLeft(int row, Token *token, int column) {
         for (int i = 0; i < 4; ++i) {
             if (grid[row][column - i] != token)
                 return false;
@@ -78,7 +78,7 @@ private:
         return true;
     }
 
-    bool checkHorizontalByRight(int row, string token, int column) {
+    bool checkHorizontalByRight(int row, Token *token, int column) {
         for (int i = 0; i < 4; ++i) {
             if (grid[row][column + i] != token)
                 return false;
@@ -86,7 +86,7 @@ private:
         return true;
     }
 
-    bool checkDiagonalByTopRight(int row, string token, int column) {
+    bool checkDiagonalByTopRight(int row, Token *token, int column) {
         cout << row << "  " << column << endl;
         for (int i = 0; i < 4; ++i) {
             for (int j = 0; j < 4; ++j) {
@@ -97,7 +97,7 @@ private:
         return true;
     }
 
-    bool checkDiagonalByTopLeft(int row, string token, int column) {
+    bool checkDiagonalByTopLeft(int row, Token *token, int column) {
         for (int i = 0; i < 4; ++i) {
             for (int j = 0; j < 4; ++j) {
                 if (grid[row + i][column - i] != token)
@@ -109,14 +109,14 @@ private:
 
 public:
     Grid() {
-        vector<string> row(L);
+        vector<Token *> row(L);
         for (int k = 0; k < h; ++k) {
             grid.push_back(row);
         }
 
         for (int i = 0; i < h; ++i) {
             for (int j = 0; j < L; ++j) {
-                grid[i][j] = "_  ";
+                grid[i][j] = nullptr;
             }
         }
     }
@@ -124,10 +124,17 @@ public:
     void drawGrid () {
         for (int i = 0; i < h + 1; ++i) {
             for (int j = 0; j < L; ++j) {
-                if (i != h)
-                    cout << grid[i][j];
-                else
+                if (i != h) {
+                    if (grid[i][j])
+                    {
+                        cout << " " << grid[i][j]->getColor() << " ";
+                    } else {
+                        cout << " . ";
+                    }
+                }
+                else {
                     cout << j << ": ";
+                }
             }
             cout << endl;
         }
@@ -135,7 +142,7 @@ public:
 
     void setToken(PlayerHuman *player, int column)
     {
-        grid[this->getRowId(column)][column] = player->getTkn()->getColor() + "  ";
+        grid[this->getRowId(column)][column] = player->getTkn();
     }
 
     bool testColumnValidity(int column) {
@@ -144,7 +151,7 @@ public:
 
     bool checkToken(int column) {
         int lastRow = this->getRowId(column);
-        string lastToken = grid[lastRow + 1][column];
+        Token *lastToken = grid[lastRow + 1][column];
 
         if (lastRow < h - 4 && lastToken == grid[lastRow + 2][column]) {
             if (checkVertical(lastRow, lastToken, column))
