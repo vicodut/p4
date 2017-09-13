@@ -7,13 +7,28 @@ public:
     Player() {}
 };
 
+class Token
+{
+private:
+    string color;
+public:
+    const string &getColor() const {
+        return color;
+    }
+
+    void setColor(const string &color) {
+        Token::color = color;
+    }
+};
 class PlayerHuman
 {
 private:
     string name;
-    string color;
+    Token *tkn;
 public:
-    PlayerHuman() {}
+    PlayerHuman() {
+        tkn = new Token();
+    }
 
     string getName() {
         return name;
@@ -23,12 +38,12 @@ public:
         this->name = name;
     }
 
-    const string &getColor() const {
-        return color;
+    Token *getTkn() const {
+        return tkn;
     }
 
-    void setColor(const string color) {
-        this->color = color;
+    void setTkn(Token *tkn) {
+        this->tkn = tkn;
     }
 };
 
@@ -120,7 +135,7 @@ public:
 
     void setToken(PlayerHuman *player, int column)
     {
-        grid[this->getRowId(column)][column] = player->getColor() + "  ";
+        grid[this->getRowId(column)][column] = player->getTkn()->getColor() + "  ";
     }
 
     bool testColumnValidity(int column) {
@@ -188,19 +203,25 @@ public:
 
         cout << "Welcome to the game  \u25C9 \u25EF" << endl;
 
+        Token *red = new Token();
+        red->setColor("\u25C9");
+
+        Token *yellow = new Token();
+        yellow->setColor("\u25EF");
+
         string name;
         cout << "Name of Player1 : ";
         cin >> name;
         player1->setNAme(name);
-        player1->setColor("\u25C9");
+        player1->setTkn(red);
 
         cout << "Name of Player2 : ";
         cin >> name;
         player2->setNAme(name);
-        player2->setColor("\u25EF");
+        player2->setTkn(yellow);
 
-        cout << "Players : " << player1->getName() << " " << player1->getColor() << endl;
-        cout << "    and : " << player2->getName() << " " << player2->getColor() << endl;
+        cout << "Players : " << player1->getName() << " " << player1->getTkn()->getColor() << endl;
+        cout << "    and : " << player2->getName() << " " << player2->getTkn()->getColor() << endl;
 
         this->changePlayer();
 
@@ -210,7 +231,7 @@ public:
         int column;
         do {
             do {
-                cout << current->getColor() << "  " << current->getName() << " column : ";
+                cout << current->getTkn()->getColor() << "  " << current->getName() << " column : ";
                 cin >> column;
             } while (!grille->testColumnValidity(column));
 
