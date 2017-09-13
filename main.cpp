@@ -56,7 +56,7 @@ private:
     }
 
     bool checkHorizontalByLeft(int row, string token, int column) {
-        for (int i = column; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i) {
             if (grid[row][column - i] != token)
                 return false;
         }
@@ -64,9 +64,30 @@ private:
     }
 
     bool checkHorizontalByRight(int row, string token, int column) {
-        for (int i = column; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i) {
             if (grid[row][column + i] != token)
                 return false;
+        }
+        return true;
+    }
+
+    bool checkDiagonalByTopRight(int row, string token, int column) {
+        cout << row << "  " << column << endl;
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                if (grid[row + i][column + i] != token)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    bool checkDiagonalByTopLeft(int row, string token, int column) {
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                if (grid[row + i][column - i] != token)
+                    return false;
+            }
         }
         return true;
     }
@@ -111,15 +132,28 @@ public:
         string lastToken = grid[lastRow + 1][column];
 
         if (lastRow < h - 4 && lastToken == grid[lastRow + 2][column]) {
-            return checkVertical(lastRow, lastToken, column);
+            if (checkVertical(lastRow, lastToken, column))
+                return true;
         }
 
         if (column >= 3 && grid[lastRow + 1][column - 1] == lastToken) {
-            return checkHorizontalByLeft(lastRow + 1, lastToken, column);
+            if (checkHorizontalByLeft(lastRow + 1, lastToken, column))
+                return true;
         }
 
         if (column <= L - 4 && grid[lastRow + 1][column + 1] == lastToken) {
-            return checkHorizontalByRight(lastRow + 1, lastToken, column);
+            if (checkHorizontalByRight(lastRow + 1, lastToken, column))
+                return true;
+        }
+
+        if (column <= L - 4 && lastRow < h - 4 && grid[lastRow + 2][column + 1] == lastToken) {
+            if (checkDiagonalByTopRight(lastRow + 1, lastToken, column))
+                return true;
+        }
+
+        if (column >= 3 && lastRow < h - 4 && grid[lastRow + 2][column - 1] == lastToken) {
+            if (checkDiagonalByTopLeft(lastRow + 1, lastToken, column))
+                return true;
         }
         return false;
     }
