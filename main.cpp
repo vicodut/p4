@@ -20,7 +20,6 @@ public:
 class Player
 {
 public :
-    //name
     bool play = 0;
 };
 
@@ -29,6 +28,7 @@ class PlayerHuman : public Player
 private:
     Token *tkn;
     string name;
+    bool play;
 public:
     void setPlay()
     {
@@ -36,7 +36,6 @@ public:
     }
     PlayerHuman()
     {
-
         setPlay();
         tkn = new Token();
     }
@@ -48,9 +47,10 @@ public:
 
     void setName(const string & name)
     {
+        if(name == "ia")
+            this->play = false;
         this->name = name;
     }
-
 
     Token *getTkn() const
     {
@@ -60,6 +60,14 @@ public:
     void setTkn(Token *tkn)
     {
         this->tkn = tkn;
+    }
+
+    int returnColumn(int max) {
+        return rand() % max;
+    }
+
+    bool isPlay() const {
+        return play;
     }
 };
 
@@ -91,38 +99,16 @@ private:
         return true;
     }
 
-    bool checkHorizontalByLeft(int row, Token *token, int column)
+    bool checkHorizontal(int row)
     {
-        for (int i = 0; i < NBR2WIN; ++i) {
-            if (grid[row][column - i] != token)
-                return false;
+        for (int i = 0; i < L - 4; ++i) {
+            if (grid[row][i] == grid[row][i + 1] &&
+                    grid[row][i + 1] == grid[row][i + 2] &&
+                    grid[row][i + 2] == grid[row][i + 3] && grid[row][i] != nullptr)
+                return true;
         }
-        return true;
+        return false;
     }
-
-    bool checkHorizontalByRight(int row, Token *token, int column)
-    {
-        for (int i = 0; i < NBR2WIN; ++i)
-        {
-            if (grid[row][column + i] != token)
-                return false;
-        }
-        return true;
-    }
-
-/*    bool checkDiagonalByTopRight(int row, Token *token, int column)
-    {
-        cout << row << "  " << column << endl;
-        for (int i = 0; i < NBR2WIN; ++i)
-        {
-            for (int j = 0; j < NBR2WIN; ++j)
-            {
-                if (grid[row + i][column + i] != token)
-                    return false;
-            }
-        }
-        return true;
-    }*/
 
     bool checkDiagonalByTopRight() {
         for (int x = 0; x < this->L - 4; x++) {
@@ -148,19 +134,6 @@ private:
         return false;
     }
 
-    /*bool checkDiagonalByTopLeft(int row, Token *token, int column)
-    {
-        for (int i = 0; i < NBR2WIN; ++i)
-        {
-            for (int j = 0; j < NBR2WIN; ++j)
-            {
-                if (grid[row + i][column - i] != token)
-                    return false;
-            }
-        }
-        return true;
-    }*/
-
 public:
     Grid(int L, int h)
     {
@@ -182,6 +155,14 @@ public:
         }
     }
 
+    int getL() const {
+        return L;
+    }
+
+    int getH() const {
+        return h;
+    }
+
     bool testColumnValidity(int column)
     {
         return (column >= 0 && column <= L - 1 && this->getRowId(column) != -1); // ?
@@ -198,16 +179,9 @@ public:
                 return true;
         }
 
-        if (column >= 3 && grid[lastRow + 1][column - 1] == lastToken)
-        {
-            if (checkHorizontalByLeft(lastRow + 1, lastToken, column))
-                return true;
-        }
+        if (checkHorizontal(lastRow + 1))
+            return true;
 
-        if (column <= L - NBR2WIN && grid[lastRow + 1][column + 1] == lastToken) {
-            if (checkHorizontalByRight(lastRow + 1, lastToken, column))
-                return true;
-        }
         if (checkDiagonalByTopRight())
             return true;
 
@@ -282,7 +256,7 @@ private:
     void choice()
     {
         int c;
-        std::cout << "Que voulez vous faire ? \n 1 : Jouer \n 2 : Lire les règles";
+        std::cout << "Que voulez vous faire ? \n 1 : Jouer \n 2 : Lire les règles\n > ";
         while (!( std::cin >> c))
         {
             if ((c=1))
@@ -315,13 +289,13 @@ public:
 
         string name;
 
-        cout << "Name of Player1 : ";
+        cout << "Name of Player1 (ia to set ia player) : ";
         cin >> name;
 
         player1->setName(name);
         player1->setTkn(red);
 
-        cout << "Name of Player2 : ";
+        cout << "Name of Player2 (ia to set ia player) : ";
         cin >> name;
 
         player2->setName(name);
@@ -347,7 +321,14 @@ public:
             do
             {
                 cout << current->getTkn()->getColor() << "  " << current->getName() << " column : ";
-                cin >> column;
+                if (!current->isPlay())
+                {
+                    column = current->returnColumn(grille->getL());
+                    cout << column << endl;
+                }
+                else {
+                    cin >> column;
+                }
             }
             while (!grille->testColumnValidity(column));
 
