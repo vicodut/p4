@@ -49,8 +49,8 @@ public:
 
 class Grid {
 private:
-    int L = 7;
-    int h = 6;
+    int L;
+    int h;
     vector<vector <Token *>> grid;
 
     int getRowId(int column) {
@@ -63,7 +63,7 @@ private:
     }
 
     bool checkVertical(int row, Token *token, int column) {
-        for (int i = 1; i <= 4; ++i) {
+        for (int i = 1; i <= NBR2WIN; ++i) {
             if (grid[row + i][column] != token)
                 return false;
         }
@@ -71,7 +71,7 @@ private:
     }
 
     bool checkHorizontalByLeft(int row, Token *token, int column) {
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < NBR2WIN; ++i) {
             if (grid[row][column - i] != token)
                 return false;
         }
@@ -79,7 +79,7 @@ private:
     }
 
     bool checkHorizontalByRight(int row, Token *token, int column) {
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < NBR2WIN; ++i) {
             if (grid[row][column + i] != token)
                 return false;
         }
@@ -88,8 +88,8 @@ private:
 
     bool checkDiagonalByTopRight(int row, Token *token, int column) {
         cout << row << "  " << column << endl;
-        for (int i = 0; i < 4; ++i) {
-            for (int j = 0; j < 4; ++j) {
+        for (int i = 0; i < NBR2WIN; ++i) {
+            for (int j = 0; j < NBR2WIN; ++j) {
                 if (grid[row + i][column + i] != token)
                     return false;
             }
@@ -97,9 +97,33 @@ private:
         return true;
     }
 
+//    bool checkDiagonalByTopRight(int row, Token *token, int column) {
+//        int count = 0;
+//        int i = 0;
+//        while (count != 3) {
+//            if (grid[row + i][column + i] == token) {
+//                count++;
+//            } else {
+//                break;
+//            }
+//        }
+//        if (count == 3)
+//        {
+//            return true;
+//        }
+//        i = 0;
+//        while (count != 3) {
+//            if (grid[row + i][column + i] == token) {
+//                count++;
+//            } else {
+//                break;
+//            }
+//        }
+//    }
+
     bool checkDiagonalByTopLeft(int row, Token *token, int column) {
-        for (int i = 0; i < 4; ++i) {
-            for (int j = 0; j < 4; ++j) {
+        for (int i = 0; i < NBR2WIN; ++i) {
+            for (int j = 0; j < NBR2WIN; ++j) {
                 if (grid[row + i][column - i] != token)
                     return false;
             }
@@ -108,7 +132,10 @@ private:
     }
 
 public:
-    Grid() {
+    Grid(int L, int h) {
+        this->L = L;
+        this->h = h;
+
         vector<Token *> row(L);
         for (int k = 0; k < h; ++k) {
             grid.push_back(row);
@@ -163,12 +190,12 @@ public:
                 return true;
         }
 
-        if (column <= L - 4 && grid[lastRow + 1][column + 1] == lastToken) {
+        if (column <= L - NBR2WIN && grid[lastRow + 1][column + 1] == lastToken) {
             if (checkHorizontalByRight(lastRow + 1, lastToken, column))
                 return true;
         }
 
-        if (column <= L - 4 && lastRow < h - 4 && grid[lastRow + 2][column + 1] == lastToken) {
+        if (column <= L - NBR2WIN && lastRow < h - 4 && grid[lastRow + 2][column + 1] == lastToken) {
             if (checkDiagonalByTopRight(lastRow + 1, lastToken, column))
                 return true;
         }
@@ -230,10 +257,16 @@ public:
         cout << "Players : " << player1->getName() << " " << player1->getTkn()->getColor() << endl;
         cout << "    and : " << player2->getName() << " " << player2->getTkn()->getColor() << endl;
 
-        this->changePlayer();
+        int L, h;
+        cout << "Length of the grid : ";
+        cin >> L;
+        cout << "High of the grid : ";
+        cin >> h;
 
-        Grid *grille = new Grid();
+        Grid *grille = new Grid(L, h);
         grille->drawGrid();
+
+        this->changePlayer();
 
         int column;
         do {
